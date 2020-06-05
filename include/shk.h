@@ -1,6 +1,8 @@
 #pragma once
 
 #include <stdint.h>
+
+#include <iostream>
 #include <vector>
 
 namespace shk {
@@ -43,4 +45,58 @@ namespace shk {
 		std::vector<operand> operands;
 		std::vector<command> commands;
 	};
+
+	std::ostream & operator<<(std::ostream &os, opcode op) {
+		os << "shk::opcode::";
+		switch(op) {
+		case opcode::noop:
+			os << "noop";
+			break;
+		case opcode::halt:
+			os << "halt";
+			break;
+		case opcode::die:
+			os << "die";
+			break;
+
+		case opcode::load:
+			os << "load";
+			break;
+		case opcode::store:
+			os << "store";
+			break;
+
+		case opcode::move:
+			os << "move";
+			break;
+		case opcode::add:
+			os << "add";
+			break;
+		case opcode::compare:
+			os << "compare";
+			break;
+		default:
+			os << "<invalid (" << static_cast<int>(op) << ")>";
+			break;
+		}
+		return os;
+	}
+
+	size_t num_operands(opcode op) {
+		switch(op) {
+		case opcode::noop:
+		case opcode::halt:
+		case opcode::die:
+			return 0;
+		case opcode::load:
+		case opcode::store:
+		case opcode::move:
+			return 2;
+		case opcode::add:
+		case opcode::compare:
+			return 3;
+		default:
+			return 0;
+		}
+	}
 } // namespace shk
