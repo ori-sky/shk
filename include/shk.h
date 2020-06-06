@@ -3,11 +3,14 @@
 #include <stdint.h>
 
 #include <iostream>
+#include <optional>
+#include <unordered_map>
 #include <vector>
 
 namespace shk {
 	enum class opcode : uint8_t {
 		noop    = 0b0000,
+		debug   = 0b0001,
 		halt    = 0b0010,
 		die     = 0b0011,
 
@@ -52,6 +55,9 @@ namespace shk {
 		case opcode::noop:
 			os << "noop";
 			break;
+		case opcode::debug:
+			os << "debug";
+			break;
 		case opcode::halt:
 			os << "halt";
 			break;
@@ -82,9 +88,33 @@ namespace shk {
 		return os;
 	}
 
+	std::optional<opcode> mnemonic_to_opcode(const std::string &str) {
+		const std::unordered_map<std::string, shk::opcode> mnemonics {
+			{"NOP", shk::opcode::noop},
+			{"DBG", shk::opcode::debug},
+			{"HLT", shk::opcode::halt},
+			{"DIE", shk::opcode::die},
+
+			{"LOD", shk::opcode::load},
+			{"STO", shk::opcode::store},
+
+			{"MOV", shk::opcode::move},
+			{"ADD", shk::opcode::add},
+			{"CMP", shk::opcode::compare},
+		};
+
+		auto it = mnemonics.find(str);
+		if(it == mnemonics.end()) {
+			return {};
+		}
+
+		return it->second;
+	}
+
 	size_t num_operands(opcode op) {
 		switch(op) {
 		case opcode::noop:
+		case opcode::debug:
 		case opcode::halt:
 		case opcode::die:
 			return 0;
