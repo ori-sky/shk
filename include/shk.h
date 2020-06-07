@@ -37,6 +37,8 @@ namespace shk {
 	struct command {
 		enum class type : uint8_t {
 			eq = 0b0000,
+			lt = 0b0001,
+			le = 0b0010,
 		};
 
 		type ty;
@@ -99,6 +101,12 @@ namespace shk {
 		case command::type::eq:
 			os << "eq";
 			break;
+		case command::type::lt:
+			os << "lt";
+			break;
+		case command::type::le:
+			os << "le";
+			break;
 		default:
 			os << "<invalid (" << static_cast<int>(ty) << ")>";
 			break;
@@ -107,20 +115,35 @@ namespace shk {
 	}
 
 	std::optional<opcode> mnemonic_to_opcode(const std::string &str) {
-		const std::unordered_map<std::string, shk::opcode> mnemonics {
-			{"NOP", shk::opcode::noop},
-			{"DBG", shk::opcode::debug},
-			{"HLT", shk::opcode::halt},
-			{"DIE", shk::opcode::die},
+		const std::unordered_map<std::string, opcode> mnemonics {
+			{"NOP", opcode::noop},
+			{"DBG", opcode::debug},
+			{"HLT", opcode::halt},
+			{"DIE", opcode::die},
 
-			{"LOD", shk::opcode::load},
-			{"STO", shk::opcode::store},
+			{"LOD", opcode::load},
+			{"STO", opcode::store},
 
-			{"MOV", shk::opcode::move},
-			{"ADD", shk::opcode::add},
-			{"CMP", shk::opcode::compare},
+			{"MOV", opcode::move},
+			{"ADD", opcode::add},
+			{"CMP", opcode::compare},
 
-			{"BRA", shk::opcode::branch},
+			{"BRA", opcode::branch},
+		};
+
+		auto it = mnemonics.find(str);
+		if(it == mnemonics.end()) {
+			return {};
+		}
+
+		return it->second;
+	}
+
+	std::optional<command::type> mnemonic_to_command(const std::string &str) {
+		const std::unordered_map<std::string, command::type> mnemonics {
+			{"EQ", command::type::eq},
+			{"LT", command::type::lt},
+			{"LE", command::type::le},
 		};
 
 		auto it = mnemonics.find(str);
@@ -148,6 +171,7 @@ namespace shk {
 		case opcode::compare:
 			return 3;
 		default:
+			std::cerr << "error: num_operands: " << op << " not implemented" << std::endl;
 			return 0;
 		}
 	}
@@ -155,8 +179,11 @@ namespace shk {
 	size_t num_operands(command::type ty) {
 		switch(ty) {
 		case command::type::eq:
+		case command::type::lt:
+		case command::type::le:
 			return 1;
 		default:
+			std::cerr << "error: num_operands: " << ty << " not implemented" << std::endl;
 			return 0;
 		}
 	}
