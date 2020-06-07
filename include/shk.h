@@ -28,8 +28,6 @@ namespace shk {
 		enum class type : uint8_t {
 			imm = 0b0,
 			reg = 0b1,
-
-			mem,
 		};
 
 		type ty;
@@ -95,6 +93,19 @@ namespace shk {
 		return os;
 	}
 
+	std::ostream & operator<<(std::ostream &os, command::type ty) {
+		os << "shk::command::type::";
+		switch(ty) {
+		case command::type::eq:
+			os << "eq";
+			break;
+		default:
+			os << "<invalid (" << static_cast<int>(ty) << ")>";
+			break;
+		}
+		return os;
+	}
+
 	std::optional<opcode> mnemonic_to_opcode(const std::string &str) {
 		const std::unordered_map<std::string, shk::opcode> mnemonics {
 			{"NOP", shk::opcode::noop},
@@ -136,6 +147,15 @@ namespace shk {
 		case opcode::add:
 		case opcode::compare:
 			return 3;
+		default:
+			return 0;
+		}
+	}
+
+	size_t num_operands(command::type ty) {
+		switch(ty) {
+		case command::type::eq:
+			return 1;
 		default:
 			return 0;
 		}
