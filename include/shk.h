@@ -9,17 +9,19 @@
 
 namespace shk {
 	enum class opcode : uint8_t {
-		noop    = 0b0000,
-		debug   = 0b0001,
-		halt    = 0b0010,
-		die     = 0b0011,
+		noop    = 0b00000000,
+		debug   = 0b00000001,
+		halt    = 0b00000010,
+		die     = 0b00000011,
 
-		load    = 0b0100,
-		store   = 0b0101,
+		load    = 0b00000100,
+		store   = 0b00000101,
 
-		move    = 0b1000,
-		add     = 0b1010,
-		compare = 0b1011,
+		move    = 0b00001000,
+		add     = 0b00001010,
+		compare = 0b00001011,
+
+		branch  = 0b00010000,
 	};
 
 	struct operand {
@@ -81,6 +83,11 @@ namespace shk {
 		case opcode::compare:
 			os << "compare";
 			break;
+
+		case opcode::branch:
+			os << "branch";
+			break;
+
 		default:
 			os << "<invalid (" << static_cast<int>(op) << ")>";
 			break;
@@ -101,6 +108,8 @@ namespace shk {
 			{"MOV", shk::opcode::move},
 			{"ADD", shk::opcode::add},
 			{"CMP", shk::opcode::compare},
+
+			{"BRA", shk::opcode::branch},
 		};
 
 		auto it = mnemonics.find(str);
@@ -118,6 +127,8 @@ namespace shk {
 		case opcode::halt:
 		case opcode::die:
 			return 0;
+		case opcode::branch:
+			return 1;
 		case opcode::load:
 		case opcode::store:
 		case opcode::move:
