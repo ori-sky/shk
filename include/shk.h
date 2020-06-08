@@ -127,7 +127,7 @@ namespace shk {
 		return os;
 	}
 
-	std::optional<opcode> mnemonic_to_opcode(const std::string &str) {
+	std::optional<opcode> mnemonic_to_opcode(std::string_view str) {
 		const std::unordered_map<std::string, opcode> mnemonics {
 			{"NOP", opcode::noop},
 			{"DBG", opcode::debug},
@@ -147,7 +147,7 @@ namespace shk {
 			{"SIP", opcode::set_ip},
 		};
 
-		auto it = mnemonics.find(str);
+		auto it = mnemonics.find(std::string(str));
 		if(it == mnemonics.end()) {
 			return {};
 		}
