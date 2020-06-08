@@ -23,6 +23,8 @@ namespace shk {
 		multiply = 0b00001100,
 
 		branch   = 0b00010000,
+		get_ip   = 0b00010010,
+		set_ip   = 0b00010011,
 	};
 
 	struct operand {
@@ -91,6 +93,12 @@ namespace shk {
 		case opcode::branch:
 			os << "branch";
 			break;
+		case opcode::get_ip:
+			os << "get_ip";
+			break;
+		case opcode::set_ip:
+			os << "set_ip";
+			break;
 
 		default:
 			os << "<invalid (" << static_cast<int>(op) << ")>";
@@ -134,6 +142,8 @@ namespace shk {
 			{"MUL", opcode::multiply},
 
 			{"BRA", opcode::branch},
+			{"GIP", opcode::get_ip},
+			{"SIP", opcode::set_ip},
 		};
 
 		auto it = mnemonics.find(str);
@@ -167,6 +177,8 @@ namespace shk {
 		case opcode::die:
 			return 0;
 		case opcode::branch:
+		case opcode::get_ip:
+		case opcode::set_ip:
 			return 1;
 		case opcode::load:
 		case opcode::store:
