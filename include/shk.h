@@ -9,19 +9,20 @@
 
 namespace shk {
 	enum class opcode : uint8_t {
-		noop    = 0b00000000,
-		debug   = 0b00000001,
-		halt    = 0b00000010,
-		die     = 0b00000011,
+		noop     = 0b00000000,
+		debug    = 0b00000001,
+		halt     = 0b00000010,
+		die      = 0b00000011,
 
-		load    = 0b00000100,
-		store   = 0b00000101,
+		load     = 0b00000100,
+		store    = 0b00000101,
 
-		move    = 0b00001000,
-		add     = 0b00001010,
-		compare = 0b00001011,
+		move     = 0b00001000,
+		add      = 0b00001010,
+		compare  = 0b00001011,
+		multiply = 0b00001100,
 
-		branch  = 0b00010000,
+		branch   = 0b00010000,
 	};
 
 	struct operand {
@@ -83,6 +84,9 @@ namespace shk {
 		case opcode::compare:
 			os << "compare";
 			break;
+		case opcode::multiply:
+			os << "multiply";
+			break;
 
 		case opcode::branch:
 			os << "branch";
@@ -127,6 +131,7 @@ namespace shk {
 			{"MOV", opcode::move},
 			{"ADD", opcode::add},
 			{"CMP", opcode::compare},
+			{"MUL", opcode::multiply},
 
 			{"BRA", opcode::branch},
 		};
@@ -169,6 +174,7 @@ namespace shk {
 			return 2;
 		case opcode::add:
 		case opcode::compare:
+		case opcode::multiply:
 			return 3;
 		default:
 			std::cerr << "error: num_operands: " << op << " not implemented" << std::endl;
