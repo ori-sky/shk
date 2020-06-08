@@ -29,8 +29,9 @@ namespace shk {
 
 	struct operand {
 		enum class type : uint8_t {
-			imm = 0b0,
-			reg = 0b1,
+			imm   = 0b00,
+			reg   = 0b01,
+			deref = 0b10,
 		};
 
 		type ty;
