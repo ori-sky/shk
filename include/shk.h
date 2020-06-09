@@ -127,6 +127,25 @@ namespace shk {
 		return os;
 	}
 
+	std::ostream & operator<<(std::ostream &os, const operand::type ty) {
+		os << "shk::operand::type::";
+		switch(ty) {
+		case operand::type::imm:
+			os << "imm";
+			break;
+		case operand::type::reg:
+			os << "reg";
+			break;
+		case operand::type::deref:
+			os << "deref";
+			break;
+		default:
+			os << "<invalid (" << static_cast<int>(ty) << ")>";
+			break;
+		}
+		return os;
+	}
+
 	std::optional<opcode> mnemonic_to_opcode(std::string_view str) {
 		const std::unordered_map<std::string, opcode> mnemonics {
 			{"NOP", opcode::noop},
