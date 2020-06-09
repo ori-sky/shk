@@ -47,6 +47,8 @@ namespace shk {
 			eq = 0b0000,
 			lt = 0b0001,
 			le = 0b0010,
+			gt = 0b0011,
+			ge = 0b0100,
 		};
 
 		type ty;
@@ -128,6 +130,12 @@ namespace shk {
 		case command::type::le:
 			os << "le";
 			break;
+		case command::type::gt:
+			os << "gt";
+			break;
+		case command::type::ge:
+			os << "ge";
+			break;
 		default:
 			os << "<invalid (" << static_cast<int>(ty) << ")>";
 			break;
@@ -192,6 +200,8 @@ namespace shk {
 			{"EQ", command::type::eq},
 			{"LT", command::type::lt},
 			{"LE", command::type::le},
+			{"GT", command::type::gt},
+			{"GE", command::type::ge},
 		};
 
 		auto it = mnemonics.find(str);
@@ -232,6 +242,8 @@ namespace shk {
 		case command::type::eq:
 		case command::type::lt:
 		case command::type::le:
+		case command::type::gt:
+		case command::type::ge:
 			return 1;
 		default:
 			std::cerr << "error: num_operands: " << ty << " not implemented" << std::endl;
