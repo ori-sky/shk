@@ -25,6 +25,8 @@ namespace shk {
 		branch   = 0b00010000,
 		get_ip   = 0b00010010,
 		set_ip   = 0b00010011,
+
+		data,
 	};
 
 	struct operand {
@@ -103,6 +105,10 @@ namespace shk {
 			os << "set_ip";
 			break;
 
+		case opcode::data:
+			os << "<data>";
+			break;
+
 		default:
 			os << "<invalid (" << static_cast<int>(op) << ")>";
 			break;
@@ -169,6 +175,8 @@ namespace shk {
 			{"BRA", opcode::branch},
 			{"GIP", opcode::get_ip},
 			{"SIP", opcode::set_ip},
+
+			{"DAT", opcode::data},
 		};
 
 		auto it = mnemonics.find(std::string(str));
