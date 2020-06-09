@@ -32,10 +32,12 @@ namespace shk {
 			imm   = 0b00,
 			reg   = 0b01,
 			deref = 0b10,
+			label,
 		};
 
 		type ty;
 		uint16_t value;
+		std::string label;
 	};
 
 	struct command {
@@ -138,6 +140,9 @@ namespace shk {
 			break;
 		case operand::type::deref:
 			os << "deref";
+			break;
+		case operand::type::label:
+			os << "<label>";
 			break;
 		default:
 			os << "<invalid (" << static_cast<int>(ty) << ")>";
