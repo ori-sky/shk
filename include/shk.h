@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 #include <iostream>
+#include <memory>
 #include <optional>
 #include <unordered_map>
 #include <vector>
@@ -153,7 +154,19 @@ namespace shk {
 
 		type ty;
 		uint16_t value;
+		std::unique_ptr<operand> segment;
 		std::string label;
+
+		size_t size() const {
+			size_t n = 0;
+
+			++n;
+			if(segment) {
+				++n;
+			}
+
+			return n;
+		}
 	};
 
 	std::ostream & operator<<(std::ostream &os, const operand::type ty) {
@@ -189,6 +202,17 @@ namespace shk {
 
 		type ty;
 		std::vector<operand> operands;
+
+		size_t size() const {
+			size_t n = 0;
+
+			++n;
+			for(auto &oper : operands) {
+				n += oper.size();
+			}
+
+			return n;
+		}
 	};
 
 	std::ostream & operator<<(std::ostream &os, command::type ty) {
@@ -241,10 +265,11 @@ namespace shk {
 			if(op != opcode::data) {
 				++n;
 			}
-			n += operands.size();
+			for(auto &oper : operands) {
+				n += oper.size();
+			}
 			for(auto &cmd : commands) {
-				++n;
-				n += cmd.operands.size();
+				n += cmd.size();
 			}
 
 			return n;
