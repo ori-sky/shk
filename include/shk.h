@@ -194,10 +194,11 @@ namespace shk {
 	struct command {
 		enum class type : uint8_t {
 			eq = 0b0000,
-			lt = 0b0001,
-			le = 0b0010,
-			gt = 0b0011,
-			ge = 0b0100,
+			ne = 0b0001,
+			lt = 0b0010,
+			le = 0b0011,
+			gt = 0b0100,
+			ge = 0b0101,
 		};
 
 		type ty;
@@ -221,6 +222,9 @@ namespace shk {
 		case command::type::eq:
 			os << "eq";
 			break;
+		case command::type::ne:
+			os << "ne";
+			break;
 		case command::type::lt:
 			os << "lt";
 			break;
@@ -243,6 +247,7 @@ namespace shk {
 	size_t num_operands(command::type ty) {
 		switch(ty) {
 		case command::type::eq:
+		case command::type::ne:
 		case command::type::lt:
 		case command::type::le:
 		case command::type::gt:
@@ -316,6 +321,7 @@ namespace shk {
 	std::optional<command::type> mnemonic_to_command(const std::string &str) {
 		const std::unordered_map<std::string, command::type> mnemonics {
 			{"EQ", command::type::eq},
+			{"NE", command::type::ne},
 			{"LT", command::type::lt},
 			{"LE", command::type::le},
 			{"GT", command::type::gt},
