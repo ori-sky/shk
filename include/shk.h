@@ -177,6 +177,20 @@ namespace shk {
 
 			return n;
 		}
+
+		char type_char() const {
+			switch(ty) {
+			case type::imm:
+				return '#';
+			case type::reg:
+				return '$';
+			case type::deref:
+				return '*';
+			default:
+				std::cerr << "error: type_char: unknown type" << std::endl;
+				return 0;
+			}
+		}
 	};
 
 	std::ostream & operator<<(std::ostream &os, const operand::type ty) {
@@ -295,7 +309,19 @@ namespace shk {
 		}
 	};
 
-	std::optional<opcode> mnemonic_to_opcode(std::string_view str) {
+	std::ostream & operator<<(std::ostream &os, const instruction &instr) {
+		os << "shk::instruction {" << std::endl;
+		os << "  op = " << instr.op << std::endl;
+		for(size_t i = 0; i < instr.operands.size(); ++i) {
+			os << "  operands[" << i << "] = " << instr.operands[i] << std::endl;
+		}
+		//for(size_t i = 0; i < instr.commands; ++i) {
+		//	os << "  commands[" << i << "] = " << instr.commands[i] << std::endl;
+		//}
+		return os << '}';
+	}
+
+	std::optional<opcode> mnemonic_to_opcode(const std::string_view str) {
 		const std::unordered_map<std::string, opcode> mnemonics {
 			{"NOP", opcode::noop},
 			{"DBG", opcode::debug},
@@ -334,7 +360,46 @@ namespace shk {
 		return it->second;
 	}
 
-	std::optional<command::type> mnemonic_to_command(const std::string &str) {
+	std::optional<std::string> opcode_to_mnemonic(const opcode op) {
+		const std::unordered_map<opcode, std::string> opcodes {
+			{opcode::noop,     "NOP"},
+			{opcode::debug,    "DBG"},
+			{opcode::halt,     "HLT"},
+			{opcode::die,      "DIE"},
+
+			{opcode::load,     "LOD"},
+			{opcode::store,    "STO"},
+			{opcode::pop,      "POP"},
+			{opcode::push,     "PSH"},
+
+			{opcode::move,     "MOV"},
+			{opcode::add,      "ADD"},
+			{opcode::compare,  "CMP"},
+			{opcode::multiply, "MUL"},
+			{opcode::divide,   "DIV"},
+			{opcode::modulo,   "MOD"},
+
+			{opcode::branch,   "BRA"},
+			{opcode::call,     "CAL"},
+			{opcode::ret,      "RET"},
+
+			{opcode::get_ip,   "GIP"},
+			{opcode::set_ip,   "SIP"},
+			{opcode::get_sp,   "GSP"},
+			{opcode::set_sp,   "SSP"},
+
+			{opcode::data,     "DAT"},
+		};
+
+		auto it = opcodes.find(op);
+		if(it == opcodes.end()) {
+			return {};
+		}
+
+		return it->second;
+	}
+
+	std::optional<command::type> mnemonic_to_command(const std::string_view str) {
 		const std::unordered_map<std::string, command::type> mnemonics {
 			{"EQ", command::type::eq},
 			{"NE", command::type::ne},
@@ -344,8 +409,26 @@ namespace shk {
 			{"GE", command::type::ge},
 		};
 
-		auto it = mnemonics.find(str);
+		auto it = mnemonics.find(std::string(str));
 		if(it == mnemonics.end()) {
+			return {};
+		}
+
+		return it->second;
+	}
+
+	std::optional<std::string> command_to_mnemonic(const command::type ty) {
+		const std::unordered_map<command::type, std::string> types {
+			{command::type::eq, "EQ"},
+			{command::type::ne, "NE"},
+			{command::type::lt, "LT"},
+			{command::type::le, "LE"},
+			{command::type::gt, "GT"},
+			{command::type::ge, "GE"},
+		};
+
+		auto it = types.find(ty);
+		if(it == types.end()) {
 			return {};
 		}
 
