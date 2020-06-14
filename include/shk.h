@@ -24,6 +24,8 @@ namespace shk {
 		add      = 0b00001010,
 		compare  = 0b00001011,
 		multiply = 0b00001100,
+		divide   = 0b00001101,
+		modulo   = 0b00001110,
 
 		branch   = 0b00010000,
 		call     = 0b00010001,
@@ -77,6 +79,12 @@ namespace shk {
 			break;
 		case opcode::multiply:
 			os << "multiply";
+			break;
+		case opcode::divide:
+			os << "divide";
+			break;
+		case opcode::modulo:
+			os << "modulo";
 			break;
 
 		case opcode::branch:
@@ -137,6 +145,8 @@ namespace shk {
 		case opcode::add:
 		case opcode::compare:
 		case opcode::multiply:
+		case opcode::divide:
+		case opcode::modulo:
 			return 3;
 		default:
 			std::cerr << "error: num_operands: " << op << " not implemented" << std::endl;
@@ -189,6 +199,10 @@ namespace shk {
 			break;
 		}
 		return os;
+	}
+
+	std::ostream & operator<<(std::ostream &os, const operand &oper) {
+		return os << "shk::operand{ty=" << oper.ty << ", value=" << oper.value << '}';
 	}
 
 	struct command {
@@ -297,6 +311,8 @@ namespace shk {
 			{"ADD", opcode::add},
 			{"CMP", opcode::compare},
 			{"MUL", opcode::multiply},
+			{"DIV", opcode::divide},
+			{"MOD", opcode::modulo},
 
 			{"BRA", opcode::branch},
 			{"CAL", opcode::call},
