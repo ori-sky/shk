@@ -4,7 +4,6 @@
 
 #include <iostream>
 #include <memory>
-#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -149,8 +148,7 @@ namespace shk {
 		case opcode::modulo:
 			return 3;
 		default:
-			std::cerr << "error: num_operands: " << op << " not implemented" << std::endl;
-			return 0;
+			throw std::runtime_error("invalid opcode");
 		}
 	}
 
@@ -187,8 +185,7 @@ namespace shk {
 			case type::deref:
 				return '*';
 			default:
-				std::cerr << "error: type_char: unknown type" << std::endl;
-				return 0;
+				throw std::runtime_error("invalid type char");
 			}
 		}
 	};
@@ -282,8 +279,7 @@ namespace shk {
 		case command::type::ge:
 			return 1;
 		default:
-			std::cerr << "error: num_operands: " << ty << " not implemented" << std::endl;
-			return 0;
+			throw std::runtime_error("invalid command type");
 		}
 	}
 
@@ -321,7 +317,7 @@ namespace shk {
 		return os << '}';
 	}
 
-	std::optional<opcode> mnemonic_to_opcode(const std::string_view str) {
+	opcode mnemonic_to_opcode(const std::string_view sv) {
 		const std::unordered_map<std::string, opcode> mnemonics {
 			{"NOP", opcode::noop},
 			{"DBG", opcode::debug},
@@ -352,15 +348,17 @@ namespace shk {
 			{"DAT", opcode::data},
 		};
 
-		auto it = mnemonics.find(std::string(str));
+		std::string str(sv);
+
+		auto it = mnemonics.find(str);
 		if(it == mnemonics.end()) {
-			return {};
+			throw std::runtime_error("invalid mnemonic: " + str);
 		}
 
 		return it->second;
 	}
 
-	std::optional<std::string> opcode_to_mnemonic(const opcode op) {
+	std::string opcode_to_mnemonic(const opcode op) {
 		const std::unordered_map<opcode, std::string> opcodes {
 			{opcode::noop,     "NOP"},
 			{opcode::debug,    "DBG"},
@@ -393,13 +391,13 @@ namespace shk {
 
 		auto it = opcodes.find(op);
 		if(it == opcodes.end()) {
-			return {};
+			throw std::runtime_error("invalid opcode");
 		}
 
 		return it->second;
 	}
 
-	std::optional<command::type> mnemonic_to_command(const std::string_view str) {
+	command::type mnemonic_to_command(const std::string_view sv) {
 		const std::unordered_map<std::string, command::type> mnemonics {
 			{"EQ", command::type::eq},
 			{"NE", command::type::ne},
@@ -409,15 +407,17 @@ namespace shk {
 			{"GE", command::type::ge},
 		};
 
-		auto it = mnemonics.find(std::string(str));
+		std::string str(sv);
+
+		auto it = mnemonics.find(str);
 		if(it == mnemonics.end()) {
-			return {};
+			throw std::runtime_error("invalid mnemonic: " + str);
 		}
 
 		return it->second;
 	}
 
-	std::optional<std::string> command_to_mnemonic(const command::type ty) {
+	std::string command_to_mnemonic(const command::type ty) {
 		const std::unordered_map<command::type, std::string> types {
 			{command::type::eq, "EQ"},
 			{command::type::ne, "NE"},
@@ -429,7 +429,7 @@ namespace shk {
 
 		auto it = types.find(ty);
 		if(it == types.end()) {
-			return {};
+			throw std::runtime_error("invalid command type");
 		}
 
 		return it->second;
